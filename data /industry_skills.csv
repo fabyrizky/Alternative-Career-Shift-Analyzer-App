@@ -1,0 +1,23 @@
+industry,skill_name,skill_category,importance,difficulty,learning_hours
+AI,Python,Programming,Essential,Medium,200
+AI,Machine Learning,Core Knowledge,Essential,High,300
+AI,Deep Learning,Core Knowledge,Essential,High,400
+AI,TensorFlow,Framework,Important,Medium,150
+AI,PyTorch,Framework,Important,Medium,150
+AI,Mathematics,Foundation,Essential,High,250
+AI,Statistics,Foundation,Essential,Medium,200
+AI,Data Science,Core Knowledge,Essential,Medium,250
+AI,NLP,Specialization,Important,High,300
+AI,Computer Vision,Specialization,Important,High,300
+Blockchain,Solidity,Programming,Essential,High,250
+Blockchain,JavaScript,Programming,Essential,Medium,200
+Blockchain,Web3.js,Framework,Essential,Medium,150
+Blockchain,Smart Contracts,Core Knowledge,Essential,High,300
+Blockchain,Cryptography,Foundation,Essential,High,200
+Blockchain,Ethereum,Platform,Essential,Medium,150
+Blockchain,DeFi,Specialization,Important,High,250
+Blockchain,Node.js,Framework,Important,Medium,150
+Blockchain,Rust,Programming,Optional,High,300
+Blockchain,Security Auditing,Specialization,Important,High,200
+Cybersecurity,Network Security,Core Knowledge,Essential,High,300
+Cybersecurity,Python,Programming
