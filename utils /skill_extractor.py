@@ -249,9 +249,12 @@ class SkillExtractor:
         Returns:
             Dictionary of skill: relevance_score
         """
-        # This would ideally use a trained model or industry-specific data
-        # For now, using a simple heuristic
-        from config import FUTURE_INDUSTRIES
+        # Import here to avoid circular import
+        try:
+            from config import FUTURE_INDUSTRIES
+        except ImportError:
+            # Fallback if config not accessible
+            FUTURE_INDUSTRIES = {}
         
         industry_skills = set()
         if industry in FUTURE_INDUSTRIES:
