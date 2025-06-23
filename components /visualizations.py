@@ -7,6 +7,17 @@ import plotly.express as px
 import pandas as pd
 from typing import Dict, List
 import numpy as np
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    from config import FUTURE_INDUSTRIES
+except ImportError:
+    # Fallback if config not accessible
+    FUTURE_INDUSTRIES = {}
 
 def create_radar_chart(scores: Dict[str, float], title: str = "Skills Assessment") -> go.Figure:
     """Create a radar chart for multi-dimensional scoring"""
@@ -402,6 +413,3 @@ def create_skill_network_graph(skills: List[str], connections: Dict[str, List[st
     )
     
     return fig
-
-# Import config for industry data
-from config import FUTURE_INDUSTRIES
