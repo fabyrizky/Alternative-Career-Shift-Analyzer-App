@@ -5,8 +5,14 @@ Maps current career to potential future STEM careers
 
 import pandas as pd
 from typing import Dict, List, Tuple
-from config import FUTURE_INDUSTRIES
 import numpy as np
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from config import FUTURE_INDUSTRIES
 
 class CareerMapper:
     def __init__(self):
