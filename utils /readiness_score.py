@@ -5,8 +5,14 @@ Calculates individual readiness score for transitioning to future STEM industrie
 
 import numpy as np
 from typing import Dict, List, Tuple
-from config import FUTURE_INDUSTRIES, SCORING_WEIGHTS
 import pandas as pd
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from config import FUTURE_INDUSTRIES, SCORING_WEIGHTS
 
 class ReadinessCalculator:
     def __init__(self):
