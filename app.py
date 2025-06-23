@@ -1,6 +1,5 @@
 """
-Career Shift Analyzer toward Future STEM Industry - Main Streamlit App
-Developed by Faby Rizky & Pieter Andrian
+Career Shift to Future STEM Industry - Main Streamlit App
 """
 
 import streamlit as st
@@ -11,6 +10,16 @@ import sys
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Setup NLTK data on first run
+import nltk
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('wordnet')
+    nltk.download('averaged_perceptron_tagger')
 
 # Import custom modules
 from config import APP_NAME, APP_DESCRIPTION, FUTURE_INDUSTRIES
