@@ -1,114 +1,118 @@
-"""
-Configuration settings for Career Shift Analyzer
-"""
+import os
+from dotenv import load_dotenv
 
-# App Settings
-APP_NAME = "Career Shift to Future STEM Industry 🚀"
-APP_VERSION = "1.0.0"
-APP_DESCRIPTION = "AI-powered career transition analyzer for future STEM industries"
+# Load environment variables
+load_dotenv()
 
-# Industries Configuration
-FUTURE_INDUSTRIES = {
-    "AI": {
-        "name": "AI & Machine Learning",
-        "icon": "🤖",
-        "description": "Artificial Intelligence, Machine Learning, Deep Learning",
-        "key_skills": ["Python", "TensorFlow", "PyTorch", "Machine Learning", "Deep Learning", 
-                       "NLP", "Computer Vision", "Data Science", "Statistics"]
+# API Configuration
+QWEN_API_KEY = os.getenv('QWEN_API_KEY', 'hf_demo')
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct"
+
+# App Configuration
+APP_TITLE = "Career Shift to Future STEM Industry"
+APP_ICON = "🚀"
+VERSION = "1.0.0"
+
+# Course Data
+STEM_FIELDS = {
+    'AI & Machine Learning': {
+        'icon': '🤖',
+        'growth': '+150%',
+        'description': 'Transform industries with AI',
+        'avg_salary': 130000,
+        'courses': [
+            'Introduction to Machine Learning',
+            'Deep Learning Fundamentals',
+            'Natural Language Processing',
+            'Computer Vision',
+            'AI Ethics and Governance'
+        ]
     },
-    "BLOCKCHAIN": {
-        "name": "Blockchain & Web3",
-        "icon": "⛓️",
-        "description": "Blockchain Development, Smart Contracts, DeFi",
-        "key_skills": ["Solidity", "Web3.js", "Smart Contracts", "Ethereum", "DeFi", 
-                       "Cryptography", "JavaScript", "Node.js", "Rust"]
+    'Data Science': {
+        'icon': '📊',
+        'growth': '+120%',
+        'description': 'Extract insights from data',
+        'avg_salary': 115000,
+        'courses': [
+            'Data Analysis with Python',
+            'Statistical Modeling',
+            'Big Data Technologies',
+            'Data Visualization',
+            'Business Analytics'
+        ]
     },
-    "CYBERSECURITY": {
-        "name": "Cybersecurity",
-        "icon": "🔒",
-        "description": "Information Security, Ethical Hacking, Security Architecture",
-        "key_skills": ["Network Security", "Penetration Testing", "SIEM", "Cryptography",
-                       "Security Auditing", "Python", "Linux", "Cloud Security", "DevSecOps"]
+    'Cybersecurity': {
+        'icon': '🔒',
+        'growth': '+100%',
+        'description': 'Protect digital assets',
+        'avg_salary': 95000,
+        'courses': [
+            'Network Security',
+            'Ethical Hacking',
+            'Digital Forensics',
+            'Security Architecture',
+            'Incident Response'
+        ]
     },
-    "BIOTECH": {
-        "name": "BioTech & HealthTech",
-        "icon": "🧬",
-        "description": "Biotechnology, Medical Technology, Bioinformatics",
-        "key_skills": ["Bioinformatics", "Genomics", "Python", "R", "Machine Learning",
-                       "Molecular Biology", "Data Analysis", "Clinical Research", "Biostatistics"]
+    'Cloud Computing': {
+        'icon': '☁️',
+        'growth': '+180%',
+        'description': 'Scale applications globally',
+        'avg_salary': 120000,
+        'courses': [
+            'AWS Fundamentals',
+            'Azure Administration',
+            'Google Cloud Platform',
+            'DevOps Practices',
+            'Kubernetes Management'
+        ]
     },
-    "AGRITECH": {
-        "name": "Agriculture & FoodTech",
-        "icon": "🌾",
-        "description": "Smart Farming, Precision Agriculture, Food Innovation",
-        "key_skills": ["IoT", "Data Analytics", "GIS", "Remote Sensing", "Python",
-                       "Agricultural Science", "Sustainability", "Supply Chain", "Automation"]
-    },
-    "AQUATECH": {
-        "name": "Aquaculture & Marine Tech",
-        "icon": "🐟",
-        "description": "Sustainable Aquaculture, Marine Biotechnology, Ocean Tech",
-        "key_skills": ["Marine Biology", "Water Quality Analysis", "IoT", "Data Analytics",
-                       "Sustainability", "Automation", "Environmental Science", "Python"]
-    },
-    "SPACETECH": {
-        "name": "SpaceTech & Exploration",
-        "icon": "🚀",
-        "description": "Space Technology, Satellite Systems, Space Exploration",
-        "key_skills": ["Aerospace Engineering", "Python", "MATLAB", "Orbital Mechanics",
-                       "Satellite Systems", "Robotics", "Systems Engineering", "C++", "Simulation"]
-    },
-    "RENEWABLE": {
-        "name": "New & Renewable Energy",
-        "icon": "♻️",
-        "description": "Solar, Wind, Battery Tech, Energy Storage, Smart Grid",
-        "key_skills": ["Energy Systems", "Python", "MATLAB", "Power Electronics",
-                       "Grid Integration", "Battery Technology", "Solar/Wind Energy", 
-                       "Energy Storage", "Sustainability"]
+    'Biotechnology': {
+        'icon': '🧬',
+        'growth': '+80%',
+        'description': 'Innovate in life sciences',
+        'avg_salary': 85000,
+        'courses': [
+            'Bioinformatics',
+            'Genetic Engineering',
+            'Pharmaceutical Development',
+            'Biomedical Devices',
+            'Regulatory Affairs'
+        ]
     }
 }
 
-# Skill Categories
+# Skill Categories for Assessment
 SKILL_CATEGORIES = {
-    "technical": ["Programming", "Software Development", "Data Analysis", "Engineering"],
-    "domain": ["Industry Knowledge", "Domain Expertise", "Specialized Skills"],
-    "soft": ["Communication", "Leadership", "Problem Solving", "Teamwork"],
-    "tools": ["Software Tools", "Platforms", "Frameworks", "Technologies"]
+    "Programming": {
+        "skills": ["Python", "R", "SQL", "JavaScript", "Java", "C++"],
+        "weight": 0.3
+    },
+    "Data Analysis": {
+        "skills": ["Statistics", "Excel", "Tableau", "Power BI", "Pandas", "NumPy"],
+        "weight": 0.25
+    },
+    "Technical": {
+        "skills": ["Git", "Linux", "AWS", "Docker", "APIs", "Databases"],
+        "weight": 0.25
+    },
+    "Soft Skills": {
+        "skills": ["Problem Solving", "Communication", "Project Management", "Leadership", "Teamwork"],
+        "weight": 0.2
+    }
 }
 
-# Learning Platform URLs
-LEARNING_PLATFORMS = {
-    "coursera": "https://www.coursera.org/search?query=",
-    "udemy": "https://www.udemy.com/courses/search/?q=",
-    "edx": "https://www.edx.org/search?q=",
-    "udacity": "https://www.udacity.com/courses/all?search=",
-    "pluralsight": "https://www.pluralsight.com/search?q=",
-    "linkedin": "https://www.linkedin.com/learning/search?keywords="
+# Career Advice Prompts
+CAREER_PROMPTS = {
+    "transition": """You are a career advisor specializing in STEM transitions. 
+    Help professionals transition from traditional careers to STEM fields.
+    Focus on practical steps, skill development, and realistic timelines.""",
+    
+    "skills": """You are a skills assessment expert. 
+    Help users identify skill gaps and create learning paths for STEM careers.
+    Provide specific, actionable recommendations.""",
+    
+    "salary": """You are a compensation analyst for STEM careers.
+    Provide realistic salary expectations and negotiation advice.
+    Consider location, experience, and market trends."""
 }
-
-# Scoring Weights
-SCORING_WEIGHTS = {
-    "current_skills_match": 0.35,
-    "transferable_skills": 0.25,
-    "learning_curve": 0.20,
-    "market_demand": 0.20
-}
-
-# UI Configuration
-UI_CONFIG = {
-    "primary_color": "#1E88E5",
-    "secondary_color": "#FFC107",
-    "success_color": "#4CAF50",
-    "warning_color": "#FF9800",
-    "danger_color": "#F44336",
-    "page_icon": "🚀",
-    "layout": "wide"
-}
-
-# Cache Settings
-CACHE_TTL = 3600  # 1 hour in seconds
-
-# File Paths
-DATA_DIR = "data"
-MODELS_DIR = "models"
-CACHE_DIR = ".cache"
