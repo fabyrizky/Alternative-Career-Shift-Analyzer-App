@@ -22,9 +22,16 @@ class SkillExtractor:
         try:
             return spacy.load("en_core_web_sm")
         except OSError:
-            print("Downloading spaCy model...")
-            os.system("python -m spacy download en_core_web_sm")
-            return spacy.load("en_core_web_sm")
+            # Try to download the model
+            try:
+                import subprocess
+                import sys
+                subprocess.check_call([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
+                return spacy.load("en_core_web_sm")
+            except:
+                # If download fails, create a blank model as fallback
+                print("Warning: spaCy model not found. Using blank model.")
+                return spacy.blank("en")
     
     def _load_skill_database(self) -> Set[str]:
         """Load comprehensive skill database"""
