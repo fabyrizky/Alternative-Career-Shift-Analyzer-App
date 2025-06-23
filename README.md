@@ -1,6 +1,6 @@
-# Career Shift Analyzer to Future STEM Industry 🚀
+# Career Shift to Future STEM Industry 🚀
 
-> An Agentic AI-powered career transition analyzer helping professionals transition to future STEM industries like Artificial Intelligence, Blockchain, Cybersecurity, Biotechnology, Agriculture & techonology, Aquaculture & Technology, Space Exploration & Technology, and Renewable Energy.
+> AI-powered career transition analyzer helping professionals transition to future STEM industries like AI, Blockchain, Cybersecurity, BioTech, AgriTech, AquaTech, SpaceTech, and Renewable Energy.
 
 ![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/streamlit-v1.29.0-red.svg)
@@ -230,21 +230,41 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🚀 Deployment
 
-### Deploy to Streamlit Cloud
+### Deploy to Streamlit Cloud (Recommended)
 
-1. Fork this repository
-2. Sign up for [Streamlit Cloud](https://share.streamlit.io/)
-3. Connect your GitHub account
-4. Deploy directly from your fork
+1. **Fork this repository** to your GitHub account
+
+2. **Prepare your repository:**
+   - Ensure all files are committed
+   - Check that `requirements.txt` is up to date
+   - Verify `packages.txt` exists (for system dependencies)
+
+3. **Deploy on Streamlit Cloud:**
+   - Go to [share.streamlit.io](https://share.streamlit.io/)
+   - Click "New app"
+   - Connect your GitHub account
+   - Select your forked repository
+   - Set branch to `main`
+   - Set main file path to `app.py`
+   - Click "Deploy"
+
+4. **Troubleshooting Deployment:**
+   - If you see "Error installing requirements", check the logs
+   - Common issues:
+     - Missing system dependencies: Add to `packages.txt`
+     - Version conflicts: Update `requirements.txt`
+     - Import errors: Check file paths and `__init__.py` files
 
 ### Deploy to Heroku
 
-1. Create a `Procfile`:
+1. **Create required files:**
+
+Create `Procfile`:
 ```
 web: sh setup.sh && streamlit run app.py
 ```
 
-2. Create `setup.sh`:
+Create `setup.sh`:
 ```bash
 mkdir -p ~/.streamlit/
 
@@ -261,10 +281,28 @@ port = $PORT\n\
 " > ~/.streamlit/config.toml
 ```
 
-3. Deploy to Heroku:
+2. **Deploy to Heroku:**
 ```bash
 heroku create your-app-name
+heroku buildpacks:add --index 1 heroku/python
 git push heroku main
+```
+
+### Local Development
+
+For local development with all features:
+```bash
+# Install development dependencies
+pip install -r requirements.txt
+
+# Download NLTK data
+python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+
+# Download spaCy model
+python -m spacy download en_core_web_sm
+
+# Run the app
+streamlit run app.py
 ```
 
 ## 🌟 Future Enhancements
