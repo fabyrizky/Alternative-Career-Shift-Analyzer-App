@@ -9,6 +9,7 @@ from typing import List, Dict, Set
 import spacy
 from collections import Counter
 import os
+import sys
 
 class SkillExtractor:
     def __init__(self):
