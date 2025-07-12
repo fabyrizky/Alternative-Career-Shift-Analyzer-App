@@ -66,6 +66,14 @@ st.markdown("""
         text-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
     }
     
+    .sub-header {
+        text-align: center;
+        color: #b0b3b8;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
     @keyframes gradientShift {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
@@ -195,6 +203,26 @@ st.markdown("""
         margin-top: 0.5rem;
     }
     
+    .hero-container {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .hero-content h2 {
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-content p {
+        color: #b0b3b8;
+        line-height: 1.6;
+    }
+    
     /* Enhanced Buttons */
     .stButton > button {
         background: var(--primary-gradient);
@@ -281,50 +309,6 @@ st.markdown("""
         padding: 1rem;
         color: #ff6b6b;
         margin: 1rem 0;
-    }
-    
-    /* Footer Styling */
-    .footer {
-        background: rgba(10, 14, 26, 0.95);
-        backdrop-filter: blur(20px);
-        border-top: 1px solid rgba(0, 240, 255, 0.2);
-        border-radius: 20px 20px 0 0;
-        padding: 3rem 2rem 2rem 2rem;
-        margin-top: 4rem;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .footer::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #00f0ff, #b347d9, #ff006e, transparent);
-        animation: borderGlow 3s linear infinite;
-    }
-    
-    @keyframes borderGlow {
-        0% { opacity: 0.5; }
-        50% { opacity: 1; }
-        100% { opacity: 0.5; }
-    }
-    
-    .footer-text {
-        color: #b0b3b8;
-        font-size: 1rem;
-        margin: 0.5rem 0;
-    }
-    
-    .footer-highlight {
-        background: var(--primary-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-weight: 600;
     }
     
     /* Mobile Responsiveness */
@@ -505,11 +489,14 @@ def fetch_educational_content():
         return None
 
 def get_enhanced_ai_response(prompt, context="general", api_key=None):
-    """Enhanced AI response with context awareness and real-time data integration"""
+    """Enhanced AI response with OpenRouter QwQ model integration"""
     try:
+        # OpenRouter API endpoint for QwQ model (free tier)
+        url = "https://openrouter.ai/api/v1/chat/completions"
+        
         # Enhanced prompts based on context
         context_prompts = {
-            "career_transition": """You are an expert STEM career advisor with 15+ years of experience helping professionals transition into technology fields. You have access to real-time job market data, salary trends, and industry insights from major tech companies, research institutions, and educational platforms.
+            "career_transition": f"""You are an expert STEM career advisor with 15+ years of experience helping professionals transition into technology fields. You have access to real-time job market data, salary trends, and industry insights.
 
 Provide comprehensive, actionable advice that includes:
 1. Specific steps and timeline for career transition
@@ -523,7 +510,7 @@ User question: {prompt}
 
 Base your response on current 2025 market conditions and emerging technology trends.""",
 
-            "skills_assessment": """You are a technical skills assessor and learning path designer for STEM careers. Analyze the user's current abilities and create personalized development plans.
+            "skills_assessment": f"""You are a technical skills assessor and learning path designer for STEM careers. Analyze the user's current abilities and create personalized development plans.
 
 Provide detailed analysis including:
 1. Current skill level assessment
@@ -537,7 +524,7 @@ User question: {prompt}
 
 Focus on practical, measurable outcomes and industry-relevant skills.""",
 
-            "salary_negotiation": """You are a compensation expert specializing in STEM salaries. Use real-time market data to provide accurate salary guidance.
+            "salary_negotiation": f"""You are a compensation expert specializing in STEM salaries. Use real-time market data to provide accurate salary guidance.
 
 Include in your response:
 1. Current market rates by location and experience
@@ -550,7 +537,7 @@ User question: {prompt}
 
 Provide specific numbers and actionable negotiation advice.""",
 
-            "general": """You are a comprehensive STEM career advisor with expertise across all technology fields. Provide helpful, accurate, and actionable guidance for career development in STEM.
+            "general": f"""You are a comprehensive STEM career advisor with expertise across all technology fields. Provide helpful, accurate, and actionable guidance for career development in STEM.
 
 User question: {prompt}
 
@@ -558,15 +545,71 @@ Provide practical advice with specific examples and resources."""
         }
 
         # Select appropriate prompt
-        enhanced_prompt = context_prompts.get(context, context_prompts["general"]).format(prompt=prompt)
+        enhanced_prompt = context_prompts.get(context, context_prompts["general"])
         
+        headers = {
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://career-stem-platform.streamlit.app",
+            "X-Title": "STEM Career Platform"
+        }
+        
+        payload = {
+            "model": "qwen/qwq-32b:free",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a professional STEM career advisor with deep expertise in technology transitions, career development, and industry insights. Provide helpful, practical advice."
+                },
+                {
+                    "role": "user", 
+                    "content": enhanced_prompt
+                }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 500,
+            "top_p": 0.9,
+            "stream": False
+        }
+        
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        
+        if response.status_code == 200:
+            result = response.json()
+            if 'choices' in result and len(result['choices']) > 0:
+                ai_response = result['choices'][0]['message']['content']
+                
+                # Enhance response with real-time data if available
+                if 'real_time_data' in st.session_state and st.session_state.real_time_data:
+                    job_data = st.session_state.real_time_data
+                    if 'total_stem_jobs' in job_data:
+                        ai_response += f"\n\n📊 **Current Market Data:** {job_data['total_stem_jobs']:,} active STEM positions available (updated: {job_data.get('last_updated', 'recently')})"
+                
+                return ai_response
+            else:
+                return "I'm here to help with your STEM career questions! The AI service is processing your request."
+        else:
+            # Fallback to HuggingFace if OpenRouter fails
+            return get_fallback_ai_response(prompt, context)
+            
+    except Exception as e:
+        return get_fallback_ai_response(prompt, context)
+
+def get_fallback_ai_response(prompt, context="general"):
+    """Fallback AI response using HuggingFace"""
+    try:
         # HuggingFace Inference API
         url = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-14B-Instruct"
         
         headers = {
-            "Authorization": f"Bearer {api_key or 'hf_demo'}",
+            "Authorization": "Bearer hf_demo",
             "Content-Type": "application/json"
         }
+        
+        enhanced_prompt = f"""You are a professional STEM career advisor. Help with career transition questions.
+
+User question: {prompt}
+
+Provide practical, actionable advice for STEM career development."""
         
         payload = {
             "inputs": enhanced_prompt,
@@ -596,7 +639,7 @@ Provide practical advice with specific examples and resources."""
             else:
                 return "I'm here to help with your STEM career questions! The AI service is processing your request."
         else:
-            return f"I'm ready to assist with your STEM career journey! While connecting to enhanced AI services, explore our real-time market data and interactive features."
+            return "I'm ready to assist with your STEM career journey! While connecting to enhanced AI services, explore our real-time market data and interactive features."
             
     except Exception as e:
         return "I'm here to provide STEM career guidance! Try our interactive features while the AI service connects, or explore our comprehensive course catalog and market analysis."
@@ -1154,19 +1197,11 @@ def main():
         st.markdown("""
         <div class="hero-container">
             <div class="hero-content">
-                <h2 style="margin: 0 0 1rem 0; font-size: 2.5rem;">Transform Your Career with AI-Powered Guidance</h2>
-                <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 2rem;">
+                <h2>Transform Your Career with AI-Powered Guidance</h2>
+                <p>
                     Access real-time job market data, personalized learning paths, and expert AI advice 
                     to successfully transition into high-growth STEM fields.
                 </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <button style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600;">
-                        🚀 Start Your Journey
-                    </button>
-                    <button style="background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600;">
-                        📊 View Market Data
-                    </button>
-                </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1339,211 +1374,6 @@ def main():
         salary_fig = create_enhanced_salary_comparison()
         if salary_fig:
             st.plotly_chart(salary_fig, use_container_width=True)
-        
-        # Detailed Market Analysis Tabs
-        st.markdown("<h3 style='color: #00f0ff; margin: 2rem 0 1rem 0;'>🔍 Detailed Market Analysis</h3>", unsafe_allow_html=True)
-        
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["🎯 Job Demand", "💰 Salary Trends", "🎓 Required Skills", "🌍 Geographic Data", "📈 Future Projections"])
-        
-        with tab1:
-            st.markdown("""
-            <div class="glass-card">
-                <h4 style="color: #00f0ff;">Job Market Demand Analysis</h4>
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #00d4aa;">🔥 Highest Demand Fields (2025)</h5>
-                    <ul style="color: #b0b3b8;">
-                        <li><strong>Cloud Computing:</strong> 18,750+ active positions (+28% growth)</li>
-                        <li><strong>AI/ML Engineering:</strong> 15,420+ active positions (+25% growth)</li>
-                        <li><strong>Data Science:</strong> 12,850+ active positions (+18% growth)</li>
-                        <li><strong>Cybersecurity:</strong> 9,340+ active positions (+15% growth)</li>
-                        <li><strong>Biotechnology:</strong> 6,720+ active positions (+12% growth)</li>
-                    </ul>
-                </div>
-                
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #feca57;">🚀 Emerging Opportunities</h5>
-                    <ul style="color: #b0b3b8;">
-                        <li><strong>Quantum Computing:</strong> Early stage but explosive growth potential</li>
-                        <li><strong>Edge AI:</strong> Growing demand for on-device AI solutions</li>
-                        <li><strong>Green Tech:</strong> Sustainability-focused technology roles</li>
-                        <li><strong>Biotech AI:</strong> Intersection of biology and artificial intelligence</li>
-                    </ul>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with tab2:
-            st.markdown("""
-            <div class="glass-card">
-                <h4 style="color: #00f0ff;">Comprehensive Salary Intelligence</h4>
-                
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #00d4aa;">💎 Premium Salary Ranges (Top 10%)</h5>
-                    <ul style="color: #b0b3b8;">
-                        <li><strong>Senior AI Architect:</strong> $250K - $400K+ (FAANG companies)</li>
-                        <li><strong>Principal Cloud Engineer:</strong> $220K - $350K+ (Tech giants)</li>
-                        <li><strong>Staff Data Scientist:</strong> $200K - $320K+ (Major tech firms)</li>
-                        <li><strong>Security Director:</strong> $180K - $300K+ (Financial/Healthcare)</li>
-                    </ul>
-                </div>
-                
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #feca57;">🎯 Salary Boosting Factors</h5>
-                    <ul style="color: #b0b3b8;">
-                        <li><strong>Advanced Certifications:</strong> +$15K-$30K annually</li>
-                        <li><strong>Geographic Location:</strong> SF Bay Area (+40%), NYC (+25%)</li>
-                        <li><strong>Company Size:</strong> FAANG companies +30-50% premium</li>
-                        <li><strong>Specialization:</strong> Niche skills command premium rates</li>
-                        <li><strong>Leadership Experience:</strong> Management roles +25-40%</li>
-                    </ul>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with tab3:
-            st.markdown("""
-            <div class="glass-card">
-                <h4 style="color: #00f0ff;">Most In-Demand Skills 2025</h4>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0;">
-                    <div style="background: rgba(0,240,255,0.1); padding: 1rem; border-radius: 8px;">
-                        <h6 style="color: #00f0ff;">🤖 AI/ML Skills</h6>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="background: rgba(0,240,255,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Python</span>
-                            <span style="background: rgba(0,240,255,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">TensorFlow</span>
-                            <span style="background: rgba(0,240,255,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">PyTorch</span>
-                            <span style="background: rgba(0,240,255,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">LangChain</span>
-                            <span style="background: rgba(0,240,255,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Vector DBs</span>
-                        </div>
-                    </div>
-                    
-                    <div style="background: rgba(0,212,170,0.1); padding: 1rem; border-radius: 8px;">
-                        <h6 style="color: #00d4aa;">☁️ Cloud Skills</h6>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="background: rgba(0,212,170,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">AWS</span>
-                            <span style="background: rgba(0,212,170,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Kubernetes</span>
-                            <span style="background: rgba(0,212,170,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Docker</span>
-                            <span style="background: rgba(0,212,170,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Terraform</span>
-                            <span style="background: rgba(0,212,170,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">GitOps</span>
-                        </div>
-                    </div>
-                    
-                    <div style="background: rgba(254,202,87,0.1); padding: 1rem; border-radius: 8px;">
-                        <h6 style="color: #feca57;">📊 Data Skills</h6>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="background: rgba(254,202,87,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">SQL</span>
-                            <span style="background: rgba(254,202,87,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Apache Spark</span>
-                            <span style="background: rgba(254,202,87,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">dbt</span>
-                            <span style="background: rgba(254,202,87,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Snowflake</span>
-                            <span style="background: rgba(254,202,87,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Power BI</span>
-                        </div>
-                    </div>
-                    
-                    <div style="background: rgba(255,107,107,0.1); padding: 1rem; border-radius: 8px;">
-                        <h6 style="color: #ff6b6b;">🔒 Security Skills</h6>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            <span style="background: rgba(255,107,107,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Zero Trust</span>
-                            <span style="background: rgba(255,107,107,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">DevSecOps</span>
-                            <span style="background: rgba(255,107,107,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">SIEM</span>
-                            <span style="background: rgba(255,107,107,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Threat Intel</span>
-                            <span style="background: rgba(255,107,107,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">CISSP</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with tab4:
-            st.markdown("""
-            <div class="glass-card">
-                <h4 style="color: #00f0ff;">Geographic Distribution & Remote Work</h4>
-                
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #00d4aa;">🏙️ Top Tech Hubs (Job Concentration)</h5>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div style="text-align: center; padding: 1rem; background: rgba(0,240,255,0.1); border-radius: 8px;">
-                            <h6 style="color: #00f0ff;">San Francisco Bay Area</h6>
-                            <div style="font-size: 1.5rem; font-weight: bold;">28,500+</div>
-                            <div style="color: #b0b3b8;">STEM jobs</div>
-                        </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(0,212,170,0.1); border-radius: 8px;">
-                            <h6 style="color: #00d4aa;">Seattle</h6>
-                            <div style="font-size: 1.5rem; font-weight: bold;">18,200+</div>
-                            <div style="color: #b0b3b8;">STEM jobs</div>
-                        </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(254,202,87,0.1); border-radius: 8px;">
-                            <h6 style="color: #feca57;">New York</h6>
-                            <div style="font-size: 1.5rem; font-weight: bold;">15,800+</div>
-                            <div style="color: #b0b3b8;">STEM jobs</div>
-                        </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(179,71,217,0.1); border-radius: 8px;">
-                            <h6 style="color: #b347d9;">Austin</h6>
-                            <div style="font-size: 1.5rem; font-weight: bold;">12,400+</div>
-                            <div style="color: #b0b3b8;">STEM jobs</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #feca57;">🌍 Remote Work Statistics</h5>
-                    <ul style="color: #b0b3b8;">
-                        <li><strong>Fully Remote:</strong> 68% of STEM jobs offer remote options</li>
-                        <li><strong>Hybrid Work:</strong> 22% prefer hybrid (2-3 days office)</li>
-                        <li><strong>Best Remote Fields:</strong> Software Dev (85%), Data Science (75%), Cybersecurity (70%)</li>
-                        <li><strong>Global Opportunities:</strong> Access to international markets and talent arbitrage</li>
-                    </ul>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with tab5:
-            st.markdown("""
-            <div class="glass-card">
-                <h4 style="color: #00f0ff;">Future Technology Trends & Career Impact</h4>
-                
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #00d4aa;">🚀 Emerging Technologies (2025-2030)</h5>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
-                        <div style="background: rgba(0,240,255,0.1); padding: 1rem; border-radius: 8px;">
-                            <h6 style="color: #00f0ff;">🧠 Artificial General Intelligence (AGI)</h6>
-                            <p style="color: #b0b3b8; font-size: 0.9rem;">Expected breakthrough in 2027-2030. Will create entirely new job categories and transform existing roles.</p>
-                            <div style="color: #00d4aa; font-weight: 600;">Career Impact: Revolutionary</div>
-                        </div>
-                        
-                        <div style="background: rgba(179,71,217,0.1); padding: 1rem; border-radius: 8px;">
-                            <h6 style="color: #b347d9;">⚛️ Quantum Computing</h6>
-                            <p style="color: #b0b3b8; font-size: 0.9rem;">Practical quantum computers for cryptography, optimization, and drug discovery by 2028.</p>
-                            <div style="color: #00d4aa; font-weight: 600;">Career Impact: High Growth</div>
-                        </div>
-                        
-                        <div style="background: rgba(254,202,87,0.1); padding: 1rem; border-radius: 8px;">
-                            <h6 style="color: #feca57;">🌐 Web3 & Decentralized Systems</h6>
-                            <p style="color: #b0b3b8; font-size: 0.9rem;">Blockchain, DeFi, and decentralized applications reshaping internet infrastructure.</p>
-                            <div style="color: #00d4aa; font-weight: 600;">Career Impact: Specialized Growth</div>
-                        </div>
-                        
-                        <div style="background: rgba(0,212,170,0.1); padding: 1rem; border-radius: 8px;">
-                            <h6 style="color: #00d4aa;">🧬 Synthetic Biology</h6>
-                            <p style="color: #b0b3b8; font-size: 0.9rem;">Engineering biological systems for manufacturing, medicine, and environmental solutions.</p>
-                            <div style="color: #00d4aa; font-weight: 600;">Career Impact: Emerging Field</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="margin: 1rem 0;">
-                    <h5 style="color: #ff6b6b;">⚠️ Skills at Risk of Automation</h5>
-                    <ul style="color: #b0b3b8;">
-                        <li><strong>Basic Data Entry:</strong> Already largely automated</li>
-                        <li><strong>Simple Code Generation:</strong> AI tools handling routine programming</li>
-                        <li><strong>Basic Quality Assurance:</strong> Automated testing and validation</li>
-                        <li><strong>Routine System Administration:</strong> Infrastructure as Code reducing manual work</li>
-                    </ul>
-                    <div style="background: rgba(0,212,170,0.1); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
-                        <strong style="color: #00d4aa;">💡 Adaptation Strategy:</strong> Focus on creative problem-solving, system design, AI collaboration, and human-centric skills that complement automation.
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
     
     elif page == "📚 Course Catalog":
         st.markdown("<h2 style='color: #00f0ff; text-align: center; margin-bottom: 2rem;'>📚 Comprehensive STEM Course Catalog</h2>", unsafe_allow_html=True)
@@ -1672,34 +1502,49 @@ def main():
         
         # Enhanced intro
         st.markdown("""
-        <div class="hero-container" style="margin: 2rem 0;">
+        <div class="hero-container">
             <div class="hero-content">
-                <h3 style="margin: 0 0 1rem 0;">Advanced AI Career Guidance</h3>
-                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.5rem;">
-                    Get personalized career advice powered by advanced AI, real-time market data, 
-                    and insights from thousands of successful STEM transitions.
+                <h3>Advanced AI Career Guidance</h3>
+                <p>
+                    Get personalized career advice powered by QwQ-32B AI model, real-time market data, 
+                    and insights from thousands of successful STEM transitions. No API key required!
                 </p>
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        # API Configuration
-        with st.expander("🔑 Enhanced AI Configuration", expanded=False):
-            col1, col2 = st.columns(2)
-            with col1:
-                api_key = st.text_input(
-                    "HuggingFace API Key (Optional):",
-                    type="password",
-                    help="Enter your HuggingFace API key for enhanced AI responses"
-                )
-                st.info("💡 Free tier available - enhanced responses with API key")
-            
-            with col2:
-                context_type = st.selectbox(
-                    "Conversation Context:",
-                    ["general", "career_transition", "skills_assessment", "salary_negotiation"],
-                    help="Select the type of career guidance you need"
-                )
+        # AI Model Information
+        st.markdown("""
+        <div class="glass-card">
+            <h4 style="color: #00f0ff;">🤖 AI Model: QwQ-32B by Qwen</h4>
+            <p style="color: #b0b3b8;">
+                Powered by OpenRouter's free tier - Advanced reasoning model specialized in step-by-step analysis 
+                and comprehensive career guidance. No configuration required!
+            </p>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <span style="background: rgba(0,212,170,0.2); padding: 0.3rem 0.6rem; border-radius: 4px; color: #00d4aa; font-size: 0.9rem;">✓ Always Active</span>
+                <span style="background: rgba(0,240,255,0.2); padding: 0.3rem 0.6rem; border-radius: 4px; color: #00f0ff; font-size: 0.9rem;">⚡ Real-time Responses</span>
+                <span style="background: rgba(254,202,87,0.2); padding: 0.3rem 0.6rem; border-radius: 4px; color: #feca57; font-size: 0.9rem;">🧠 Advanced Reasoning</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Context selection for better responses
+        context_type = st.selectbox(
+            "💡 Select conversation context for optimized advice:",
+            ["general", "career_transition", "skills_assessment", "salary_negotiation"],
+            help="Choose the type of career guidance you need for more targeted responses",
+            index=0
+        )
+        
+        context_descriptions = {
+            "general": "General STEM career advice and guidance",
+            "career_transition": "Detailed transition planning and step-by-step guidance", 
+            "skills_assessment": "Skills gap analysis and learning path recommendations",
+            "salary_negotiation": "Compensation analysis and negotiation strategies"
+        }
+        
+        st.caption(f"Selected: {context_descriptions[context_type]}")
         
         # Quick Question Templates
         st.markdown("<h4 style='color: #00f0ff; margin: 2rem 0 1rem 0;'>🚀 Popular Career Questions</h4>", unsafe_allow_html=True)
@@ -1751,7 +1596,7 @@ def main():
         if ask_button and user_input:
             with st.spinner("🤖 AI Advisor analyzing your question with real-time market data..."):
                 # Add context and real-time data to the response
-                enhanced_response = get_enhanced_ai_response(user_input, context_type, api_key)
+                enhanced_response = get_enhanced_ai_response(user_input, context_type)
                 
                 # Add to chat history
                 st.session_state.chat_history.append({
@@ -1809,10 +1654,10 @@ def main():
         
         # Assessment introduction
         st.markdown("""
-        <div class="hero-container" style="margin: 2rem 0;">
+        <div class="hero-container">
             <div class="hero-content">
-                <h3 style="margin: 0 0 1rem 0;">Professional Skills Evaluation</h3>
-                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 1.5rem;">
+                <h3>Professional Skills Evaluation</h3>
+                <p>
                     Get a comprehensive analysis of your current skills, identify growth opportunities, 
                     and receive personalized recommendations for your STEM career development.
                 </p>
@@ -1976,181 +1821,58 @@ def main():
             radar_fig = create_skills_radar_enhanced()
             if radar_fig:
                 st.plotly_chart(radar_fig, use_container_width=True)
-            
-            # Detailed category analysis
-            st.markdown("<h4 style='color: #00f0ff; margin: 2rem 0 1rem 0;'>📋 Detailed Category Analysis</h4>", unsafe_allow_html=True)
-            
-            for category, data in scores.items():
-                avg_score = data['average']
-                benchmark = data['benchmark']
-                performance = "Above Average" if avg_score >= benchmark else "Below Average"
-                performance_color = "#00d4aa" if avg_score >= benchmark else "#feca57"
-                
-                st.markdown(f"""
-                <div class="glass-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h5 style="color: #00f0ff; margin: 0;">{category}</h5>
-                        <div style="text-align: right;">
-                            <div style="font-size: 1.2rem; font-weight: 600; color: {performance_color};">{avg_score:.1f}/10</div>
-                            <div style="font-size: 0.9rem; color: #b0b3b8;">{performance}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
-                        {''.join([f'<div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px;"><span>{skill}</span><span style="font-weight: 600;">{score}/10</span></div>' for skill, score in data['skills'].items()])}
-                    </div>
-                    
-                    <div style="background: rgba(0,240,255,0.1); padding: 1rem; border-radius: 8px;">
-                        <strong style="color: #00f0ff;">Recommendations:</strong>
-                        <ul style="margin: 0.5rem 0; color: #b0b3b8;">
-                            {f'<li>Focus on improving weaker skills in this category</li><li>Consider taking specialized courses</li><li>Seek hands-on projects to build experience</li>' if avg_score < benchmark else f'<li>Leverage this strength in job applications</li><li>Consider mentoring others in this area</li><li>Explore advanced specializations</li>'}
-                        </ul>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            # Career path recommendations
-            st.markdown("<h4 style='color: #00f0ff; margin: 2rem 0 1rem 0;'>💼 Personalized Career Path Recommendations</h4>", unsafe_allow_html=True)
-            
-            # Determine career recommendations based on strongest skills
-            career_recommendations = {
-                "Programming & Development": [
-                    ("Software Engineer", "Build applications and systems", "$85K - $180K"),
-                    ("Full-Stack Developer", "Create end-to-end web applications", "$75K - $160K"),
-                    ("DevOps Engineer", "Automate and optimize development workflows", "$90K - $170K")
-                ],
-                "Data & Analytics": [
-                    ("Data Scientist", "Extract insights from complex datasets", "$90K - $175K"),
-                    ("Business Analyst", "Bridge business and technical requirements", "$70K - $140K"),
-                    ("Data Engineer", "Build data pipelines and infrastructure", "$95K - $180K")
-                ],
-                "Cloud & Infrastructure": [
-                    ("Cloud Solutions Architect", "Design scalable cloud systems", "$110K - $200K"),
-                    ("Site Reliability Engineer", "Ensure system reliability and performance", "$100K - $185K"),
-                    ("Infrastructure Engineer", "Manage and optimize IT infrastructure", "$85K - $160K")
-                ],
-                "Soft Skills & Leadership": [
-                    ("Technical Project Manager", "Lead technical teams and projects", "$95K - $170K"),
-                    ("Product Manager", "Guide product strategy and development", "$100K - $190K"),
-                    ("Engineering Manager", "Manage technical teams and processes", "$120K - $220K")
-                ]
-            }
-            
-            top_categories = sorted(category_scores.items(), key=lambda x: x[1], reverse=True)[:2]
-            
-            for category_name, score in top_categories:
-                if category_name in career_recommendations:
-                    st.markdown(f"""
-                    <div class="glass-card">
-                        <h5 style="color: #00d4aa;">🎯 Recommended Paths Based on Your {category_name} Strength ({score:.1f}/10)</h5>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                    """, unsafe_allow_html=True)
-                    
-                    for role, description, salary in career_recommendations[category_name]:
-                        st.markdown(f"""
-                            <div style="background: rgba(0,212,170,0.1); padding: 1rem; border-radius: 8px;">
-                                <h6 style="color: #00d4aa; margin-bottom: 0.5rem;">{role}</h6>
-                                <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">{description}</p>
-                                <div style="color: #feca57; font-weight: 600;">{salary}</div>
-                            </div>
-                        """, unsafe_allow_html=True)
-                    
-                    st.markdown("</div></div>", unsafe_allow_html=True)
-            
-            # Learning recommendations
-            st.markdown("<h4 style='color: #00f0ff; margin: 2rem 0 1rem 0;'>📚 Personalized Learning Plan</h4>", unsafe_allow_html=True)
-            
-            weak_areas = [k for k, v in category_scores.items() if v < 6]
-            if weak_areas:
-                st.markdown(f"""
-                <div class="glass-card">
-                    <h5 style="color: #feca57;">📈 Priority Learning Areas</h5>
-                    <p style="color: #b0b3b8;">Focus on these areas to maximize your career opportunities:</p>
-                    <div style="margin: 1rem 0;">
-                        {''.join([f'<div style="background: rgba(254,202,87,0.1); padding: 0.8rem; border-radius: 6px; margin: 0.5rem 0;"><strong style="color: #feca57;">{area}</strong><br><span style="color: #b0b3b8; font-size: 0.9rem;">Current: {category_scores[area]:.1f}/10 | Target: 7+/10</span></div>' for area in weak_areas])}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            # Next steps action plan
-            st.markdown(f"""
-            <div class="glass-card">
-                <h5 style="color: #00f0ff;">🚀 30-60-90 Day Action Plan</h5>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                    <div style="background: rgba(0,240,255,0.1); padding: 1rem; border-radius: 8px;">
-                        <h6 style="color: #00f0ff;">📅 Next 30 Days</h6>
-                        <ul style="color: #b0b3b8; font-size: 0.9rem;">
-                            <li>Take 1-2 courses in your weakest skill area</li>
-                            <li>Start a hands-on project</li>
-                            <li>Join relevant online communities</li>
-                            <li>Update your LinkedIn profile</li>
-                        </ul>
-                    </div>
-                    
-                    <div style="background: rgba(0,212,170,0.1); padding: 1rem; border-radius: 8px;">
-                        <h6 style="color: #00d4aa;">📅 Next 60 Days</h6>
-                        <ul style="color: #b0b3b8; font-size: 0.9rem;">
-                            <li>Complete certification in target area</li>
-                            <li>Build portfolio projects</li>
-                            <li>Network with professionals in target roles</li>
-                            <li>Apply for stretch projects at work</li>
-                        </ul>
-                    </div>
-                    
-                    <div style="background: rgba(254,202,87,0.1); padding: 1rem; border-radius: 8px;">
-                        <h6 style="color: #feca57;">📅 Next 90 Days</h6>
-                        <ul style="color: #b0b3b8; font-size: 0.9rem;">
-                            <li>Start applying for target roles</li>
-                            <li>Complete advanced coursework</li>
-                            <li>Seek mentorship opportunities</li>
-                            <li>Retake this assessment to track progress</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
     
-    # Clean Enhanced Footer with Attribution - FIXED VERSION
+    # Clean Enhanced Footer with Attribution
     st.markdown("---")
     
-    # Create the footer using columns for better layout
-    footer_col1, footer_col2, footer_col3 = st.columns([1, 2, 1])
+    # Footer using proper Streamlit components
+    col1, col2, col3 = st.columns([1, 2, 1])
     
-    with footer_col2:
+    with col2:
         st.markdown("""
-        <div class="footer-container">
-            <div class="footer-content">
-                <h3>🚀 Ready to Transform Your Career?</h3>
-                <p>Join thousands of professionals who have successfully transitioned into high-growth STEM careers</p>
-                
-                <div class="footer-stats">
-                    <div class="footer-stat">
-                        <div class="footer-stat-number">87%</div>
-                        <div class="footer-stat-label">Success Rate</div>
-                    </div>
-                    <div class="footer-stat">
-                        <div class="footer-stat-number">10K+</div>
-                        <div class="footer-stat-label">Career Transitions</div>
-                    </div>
-                    <div class="footer-stat">
-                        <div class="footer-stat-number">4.9⭐</div>
-                        <div class="footer-stat-label">User Rating</div>
-                    </div>
-                </div>
+        <div style="text-align: center; padding: 2rem; background: rgba(10, 14, 26, 0.95); border-radius: 20px; margin-top: 2rem;">
+            <h3 style="color: #00f0ff; margin-bottom: 1rem;">🚀 Ready to Transform Your Career?</h3>
+            <p style="color: #b0b3b8; margin-bottom: 1.5rem;">Join thousands of professionals who have successfully transitioned into high-growth STEM careers</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Success metrics
+        footer_col1, footer_col2, footer_col3 = st.columns(3)
+        
+        with footer_col1:
+            st.metric(
+                label="Success Rate",
+                value="87%",
+                delta="15% increase"
+            )
+        
+        with footer_col2:
+            st.metric(
+                label="Career Transitions",
+                value="10K+",
+                delta="2K this year"
+            )
+        
+        with footer_col3:
+            st.metric(
+                label="User Rating",
+                value="4.9⭐",
+                delta="Excellent"
+            )
+        
+        st.markdown("""
+        <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="color: #00f0ff; font-weight: 600; margin-bottom: 0.5rem;">
+                Initiated & Developed by Faby Rizky & Sopian Hadianto
             </div>
-            
-            <div class="footer-attribution">
-                <div class="highlight">
-                    Initiated & Developed by Faby Rizky & Sopian Hadianto
-                </div>
-                <div class="powered-by">
-                    Powered by Advanced AI • Real-time Market Data • Professional Career Intelligence
-                </div>
+            <div style="color: #b0b3b8; margin: 0.5rem 0;">
+                Powered by Advanced AI • Real-time Market Data • Professional Career Intelligence
             </div>
-            
-            <div class="footer-copyright">
+            <div style="color: #7f8c8d; font-size: 0.85rem; margin-top: 1rem;">
                 © 2025 STEM Career Platform. Built with ❤️ using Streamlit and AI.
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()
