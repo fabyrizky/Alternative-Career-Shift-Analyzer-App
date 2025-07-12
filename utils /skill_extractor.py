@@ -6,7 +6,6 @@ Extracts skills from user input text using NLP techniques
 import re
 import pandas as pd
 from typing import List, Dict, Set
-import spacy
 from collections import Counter
 import os
 import sys
@@ -14,26 +13,9 @@ import sys
 class SkillExtractor:
     def __init__(self):
         """Initialize skill extractor with pre-defined skill database"""
-        self.nlp = self._load_spacy_model()
         self.skill_database = self._load_skill_database()
         self.skill_synonyms = self._load_skill_synonyms()
         
-    def _load_spacy_model(self):
-        """Load spaCy model with error handling"""
-        try:
-            return spacy.load("en_core_web_sm")
-        except OSError:
-            # Try to download the model
-            try:
-                import subprocess
-                import sys
-                subprocess.check_call([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
-                return spacy.load("en_core_web_sm")
-            except:
-                # If download fails, create a blank model as fallback
-                print("Warning: spaCy model not found. Using blank model.")
-                return spacy.blank("en")
-    
     def _load_skill_database(self) -> Set[str]:
         """Load comprehensive skill database"""
         # Core technical skills
@@ -46,7 +28,7 @@ class SkillExtractor:
             # Frameworks & Libraries
             "react", "angular", "vue", "django", "flask", "spring", "nodejs", "express",
             "tensorflow", "pytorch", "keras", "scikit-learn", "pandas", "numpy",
-            "matplotlib", "seaborn", "plotly", "opencv", "nltk", "spacy",
+            "matplotlib", "seaborn", "plotly", "opencv", "nltk",
             
             # Data & Analytics
             "data analysis", "data science", "machine learning", "deep learning",
@@ -118,11 +100,10 @@ class SkillExtractor:
         
         # Extract using multiple methods
         pattern_skills = self._extract_by_patterns(text)
-        nlp_skills = self._extract_by_nlp(text)
         keyword_skills = self._extract_by_keywords(text)
         
         # Combine all extracted skills
-        all_skills = pattern_skills | nlp_skills | keyword_skills
+        all_skills = pattern_skills | keyword_skills
         
         # Categorize skills
         categorized_skills = self._categorize_skills(all_skills)
@@ -154,26 +135,6 @@ class SkillExtractor:
             for skill in skill_list:
                 if skill.lower() in self.skill_database:
                     skills.add(skill.lower())
-        
-        return skills
-    
-    def _extract_by_nlp(self, text: str) -> Set[str]:
-        """Extract skills using NLP techniques"""
-        skills = set()
-        doc = self.nlp(text)
-        
-        # Extract noun phrases
-        for chunk in doc.noun_chunks:
-            chunk_text = chunk.text.lower()
-            if chunk_text in self.skill_database:
-                skills.add(chunk_text)
-        
-        # Extract entities
-        for ent in doc.ents:
-            if ent.label_ in ["ORG", "PRODUCT", "LANGUAGE"]:
-                ent_text = ent.text.lower()
-                if ent_text in self.skill_database:
-                    skills.add(ent_text)
         
         return skills
     
@@ -249,17 +210,19 @@ class SkillExtractor:
         Returns:
             Dictionary of skill: relevance_score
         """
-        # Import here to avoid circular import
-        try:
-            from config import FUTURE_INDUSTRIES
-        except ImportError:
-            # Fallback if config not accessible
-            FUTURE_INDUSTRIES = {}
+        # Define industry-specific skills
+        industry_skills_map = {
+            "AI": {"python", "machine learning", "deep learning", "tensorflow", "pytorch", "data science"},
+            "BLOCKCHAIN": {"solidity", "web3", "ethereum", "smart contracts", "blockchain", "cryptocurrency"},
+            "CYBERSECURITY": {"network security", "penetration testing", "cybersecurity", "cryptography", "incident response"},
+            "BIOTECH": {"bioinformatics", "r", "python", "genomics", "molecular biology", "statistics"},
+            "AGRITECH": {"iot", "data analysis", "python", "gis", "remote sensing", "precision agriculture"},
+            "AQUATECH": {"marine biology", "water quality", "iot", "data analysis", "environmental science"},
+            "SPACETECH": {"aerospace engineering", "python", "matlab", "systems engineering", "simulation"},
+            "RENEWABLE": {"energy systems", "python", "matlab", "sustainability", "grid integration"}
+        }
         
-        industry_skills = set()
-        if industry in FUTURE_INDUSTRIES:
-            industry_skills = set(FUTURE_INDUSTRIES[industry]["key_skills"])
-            industry_skills = {s.lower() for s in industry_skills}
+        industry_skills = industry_skills_map.get(industry.upper(), set())
         
         scores = {}
         for skill in skills:
