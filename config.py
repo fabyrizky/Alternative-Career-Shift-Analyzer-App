@@ -6,7 +6,7 @@ load_dotenv()
 
 # API Configuration
 QWEN_API_KEY = os.getenv('QWEN_API_KEY', 'hf_demo')
-HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct"
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/Qwen/QwQ-32B"
 
 # App Configuration
 APP_TITLE = "Career Shift to Future STEM Industry"
