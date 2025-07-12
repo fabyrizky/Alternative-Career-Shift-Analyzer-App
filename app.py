@@ -2139,7 +2139,7 @@ def main():
         
         <div style="text-align: center; margin: 2rem 0;">
             <div style="font-size: 1.1rem; color: #00f0ff; font-weight: 600; margin-bottom: 0.5rem;">
-                Initiated & Developed by Faby Rizky & Pieter Andrian
+                Initiated & Developed by Faby Rizky & Sopian Hadianto
             </div>
             <div style="margin: 1rem 0; color: #b0b3b8; font-size: 0.9rem;">
                 Powered by Advanced AI • Real-time Market Data • Professional Career Intelligence
