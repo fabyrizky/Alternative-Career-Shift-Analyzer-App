@@ -2111,48 +2111,46 @@ def main():
             </div>
             """, unsafe_allow_html=True)
     
-    # Clean Enhanced Footer with Attribution
+    # Clean Enhanced Footer with Attribution - FIXED VERSION
     st.markdown("---")
-    st.markdown("""
-    <div class="footer">
-        <div style="margin-bottom: 2rem;">
-            <h3 style="color: #00f0ff; margin-bottom: 1rem;">🚀 Ready to Transform Your Career?</h3>
-            <p style="font-size: 1.1rem; color: #b0b3b8; margin-bottom: 1.5rem;">
-                Join thousands of professionals who have successfully transitioned into high-growth STEM careers
-            </p>
+    
+    # Create the footer using columns for better layout
+    footer_col1, footer_col2, footer_col3 = st.columns([1, 2, 1])
+    
+    with footer_col2:
+        st.markdown("""
+        <div class="footer-container">
+            <div class="footer-content">
+                <h3>🚀 Ready to Transform Your Career?</h3>
+                <p>Join thousands of professionals who have successfully transitioned into high-growth STEM careers</p>
+                
+                <div class="footer-stats">
+                    <div class="footer-stat">
+                        <div class="footer-stat-number">87%</div>
+                        <div class="footer-stat-label">Success Rate</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div class="footer-stat-number">10K+</div>
+                        <div class="footer-stat-label">Career Transitions</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div class="footer-stat-number">4.9⭐</div>
+                        <div class="footer-stat-label">User Rating</div>
+                    </div>
+                </div>
+            </div>
             
-            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin: 2rem 0;">
-                <div style="background: rgba(0,240,255,0.1); padding: 1rem 1.5rem; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #00f0ff;">87%</div>
-                    <div style="color: #b0b3b8; font-size: 0.9rem;">Success Rate</div>
+            <div class="footer-attribution">
+                <div class="highlight">
+                    Initiated & Developed by Faby Rizky & Sopian Hadianto
                 </div>
-                <div style="background: rgba(0,212,170,0.1); padding: 1rem 1.5rem; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #00d4aa;">10K+</div>
-                    <div style="color: #b0b3b8; font-size: 0.9rem;">Career Transitions</div>
-                </div>
-                <div style="background: rgba(254,202,87,0.1); padding: 1rem 1.5rem; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: bold; color: #feca57;">4.9⭐</div>
-                    <div style="color: #b0b3b8; font-size: 0.9rem;">User Rating</div>
+                <div class="powered-by">
+                    Powered by Advanced AI • Real-time Market Data • Professional Career Intelligence
                 </div>
             </div>
-        </div>
-        
-        <div style="text-align: center; margin: 2rem 0;">
-            <div style="font-size: 1.1rem; color: #00f0ff; font-weight: 600; margin-bottom: 0.5rem;">
-                Initiated & Developed by Faby Rizky & Sopian Hadianto
-            </div>
-            <div style="margin: 1rem 0; color: #b0b3b8; font-size: 0.9rem;">
-                Powered by Advanced AI • Real-time Market Data • Professional Career Intelligence
-            </div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p style="color: #7f8c8d; font-size: 0.85rem; margin: 0;">
+            
+            <div class="footer-copyright">
                 © 2025 STEM Career Platform. Built with ❤️ using Streamlit and AI.
-            </p>
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    main()
+        """, unsafe_allow_html=True)
